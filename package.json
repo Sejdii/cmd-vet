@@ -1,0 +1,58 @@
+{
+  "name": "cmd-vet",
+  "version": "0.1.0",
+  "description": "Check whether a bash command is safe to run, e.g. for whitelisting in AI agent hooks.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint --cache",
+    "format": "prettier --write . --cache",
+    "format:check": "prettier --check . --cache",
+    "depcruise": "depcruise --config .dependency-cruiser.mjs src",
+    "gate:fast": "tsx scripts/gate.ts fast",
+    "gate:full": "tsx scripts/gate.ts full",
+    "gate:list": "tsx scripts/gate.ts list"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "12.6.0",
+      "onFail": "download"
+    }
+  },
+  "packageManager": "pnpm@12.6.0",
+  "devDependencies": {
+    "@types/node": "^20",
+    "@vitest/coverage-v8": "^4.1.11",
+    "dependency-cruiser": "^18.2.0",
+    "eslint": "^9",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-sonarjs": "^4.2.0",
+    "prettier": "^3.9.6",
+    "tsx": "^4.23.12",
+    "typescript": "^5",
+    "typescript-eslint": "^8",
+    "vitest": "^4.1.10"
+  }
+}

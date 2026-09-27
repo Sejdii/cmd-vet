@@ -1,0 +1,48 @@
+# unrecognized / inherently unsafe commands
+rm -rf /
+curl http://evil.example.com
+sudo rm -rf /
+
+# code-capable tools with no per-flag allow-list (can execute via their own primitives)
+awk '{print $1}' file.txt
+awk 'BEGIN{system("rm -rf /")}'
+sed 's/a/b/' file.txt
+sed '1e id'
+
+# redirection defeats read-only intent even for otherwise-safe commands
+sort file.txt > /etc/cron.d/evil
+cat file.txt >> out.txt
+ls 2> /dev/null
+
+# find with forbidden flags
+find . -name "*.sh" -exec rm {} \;
+find . -execdir ls \;
+find . -prune
+find . -delete
+
+# escaped flags must still resolve to the forbidden flag they spell
+find . -e\xec rm {} \;
+
+# uname/ps without the specific required args
+uname
+uname -r
+ps
+ps -ef
+
+# command substitution / subshells are treated as unsafe
+echo $(rm -rf /)
+cat `whoami`
+(rm -rf /)
+(ls)(pwd)
+
+# process substitution spawns a subprocess as a plain argument
+diff a.txt <(rm -rf /)
+cat <(rm -rf /)
+
+# background execution and newline-separated commands must not be absorbed as args
+ls & rm -rf /
+
+# compound commands where at least one part is unsafe
+ls -la && rm -rf /
+find . -delete | grep foo
+ls ; curl http://evil.example.com

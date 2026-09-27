@@ -1,0 +1,41 @@
+# Unconditionally safe commands
+ls
+ls -la
+ls  -la
+ls ""
+mkdir -p foo/bar
+pwd
+cd /tmp
+tree -L 2
+grep -r "TODO" .
+grep "hello world" file.txt
+grep "a\"b" file.txt
+cat file.txt
+less file.txt
+more file.txt
+head -n 10 file.txt
+tail -f file.txt
+wc -l file.txt
+diff a.txt b.txt
+sort file.txt
+uniq file.txt
+whoami
+hostname
+date
+uptime
+which node
+
+# find without exec/execdir/prune/delete flags
+find . -name "*.ts"
+find . -type f -name "*.log"
+
+# flag-specific commands
+uname -a
+ps aux
+
+# compound commands where every part is individually safe
+ls -la && pwd
+find . -name "*.log" | grep error
+cat file.txt ; wc -l file.txt
+which node && ls -la
+ps aux | grep node

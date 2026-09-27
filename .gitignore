@@ -1,0 +1,10 @@
+/node_modules
+/dist
+/coverage
+/.gate-logs
+.eslintcache
+*.tsbuildinfo
+.DS_Store
+/dependency-graph.svg
+
+.ai/
