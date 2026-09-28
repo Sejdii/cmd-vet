@@ -34,12 +34,6 @@ const FIND_FORBIDDEN_FLAGS = new Set([
   '-fls',
 ]);
 
-const REDIRECTION_TOKEN = /^\d*(>>?|<<?)$/;
-
-function containsRedirection(args: string[]): boolean {
-  return args.some((arg) => REDIRECTION_TOKEN.test(arg) || arg === '&>' || arg === '&>>');
-}
-
 function hasExactlyArgs(args: string[], expected: string[]): boolean {
   return args.length === expected.length && args.every((a, i) => a === expected[i]);
 }
@@ -53,7 +47,6 @@ const RULES: Record<string, (args: string[]) => boolean> = {
 export const LinuxRulePack: RulePack = {
   name: 'linux',
   evaluate(commandName, args) {
-    if (containsRedirection(args)) return false;
     if (UNCONDITIONALLY_SAFE_COMMANDS.has(commandName)) return true;
     const rule = RULES[commandName];
     return rule ? rule(args) : false;

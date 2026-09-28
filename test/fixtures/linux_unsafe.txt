@@ -14,6 +14,13 @@ sort file.txt > /etc/cron.d/evil
 cat file.txt >> out.txt
 ls 2> /dev/null
 
+# redirection glued to adjacent text
+ls -la>>/root/.bashrc
+cat file.txt>out.txt
+sort<in.txt
+>out.txt ls
+cat <>file.txt
+
 # find with forbidden flags
 find . -name "*.sh" -exec rm {} \;
 find . -execdir ls \;

@@ -1,0 +1,56 @@
+# unbounded API access
+gh api repos/owner/repo
+gh api graphql -f query=x
+
+# mutating verbs
+gh pr create --title x --body y
+gh pr close 42
+gh pr merge 42
+gh pr comment 42 --body hi
+gh pr checkout 42
+gh issue create --title x
+gh issue close 7
+gh repo clone owner/repo
+gh repo delete owner/repo
+
+# config / credential / extensibility commands
+gh auth login
+gh auth status
+gh config set editor vim
+gh alias set co "pr checkout"
+gh extension install owner/gh-ext
+gh ssh-key add key.pub
+gh secret set FOO
+gh gpg-key add key.gpg
+gh codespace create
+
+# unrecognized noun/verb combos
+gh workflow list
+gh run list
+gh release list
+
+# noun with no verb
+gh pr
+gh issue
+gh repo
+
+# bare gh with no subcommand at all
+gh
+
+# redirection defeats read-only intent
+gh pr view 42 > out.txt
+gh issue list >> out.txt
+
+# redirection glued to adjacent text
+gh pr view 42 1>out.json
+gh issue list>>out.txt
+gh pr view 42 <>out.txt
+gh pr list &>out.txt
+
+# command substitution / subshells are treated as unsafe
+gh pr view $(echo 1)
+gh pr view `echo 1`
+
+# compound commands where at least one part is unsafe
+gh pr list && gh pr merge 42
+gh pr view 1 | gh pr comment 1 --body -

@@ -1,0 +1,15 @@
+# compound commands mixing safe linux with unsafe github commands
+ls -la && gh pr merge 42
+gh api repos/owner/repo && ls -la
+gh auth login | grep token
+pwd ; gh repo clone owner/repo
+
+# compound commands mixing safe github with unsafe linux commands
+gh pr list && rm -rf /
+gh issue list | sed '1e id'
+gh repo view && ls > out.txt
+gh repo view && ls>out.txt
+curl http://evil.example.com ; gh pr view 1
+
+# both sides unsafe
+rm -rf / && gh api repos/owner/repo

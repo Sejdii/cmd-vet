@@ -1,0 +1,6 @@
+# compound commands mixing safe linux and safe github commands
+gh pr list && ls -la
+ls -la && gh pr list
+gh issue list | grep open
+pwd ; gh repo view
+gh pr view 1 && cat file.txt && gh issue status

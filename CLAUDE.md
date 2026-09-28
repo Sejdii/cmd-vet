@@ -60,7 +60,7 @@ dependency-cruiser enforces two things for every module: it may only import othe
 
 ### Adding a new rule pack
 
-Implement `RulePack` from `src/core`, export it from `src/rule-packs/index.ts`, and add it to `getDefaultRulePacks()` if it should be part of the default set. `isSafe` treats multiple rule packs as OR'd (a segment is safe if *any* pack accepts it).
+Implement `RulePack` from `src/core`, export it from `src/rule-packs/index.ts`, and add it to `getDefaultRulePacks()` if it should be part of the default set. `isSafe` treats multiple rule packs as OR'd (a segment is safe if _any_ pack accepts it).
 
 ## Testing conventions
 

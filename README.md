@@ -15,12 +15,12 @@ pnpm add cmd-vet
 ```ts
 import { isSafe } from 'cmd-vet';
 
-isSafe('ls -la');                 // true
+isSafe('ls -la'); // true
 isSafe('cat file.txt | grep foo'); // true
-isSafe('rm -rf /');               // false
-isSafe('ls > /etc/cron.d/evil');  // false — redirection defeats read-only intent
-isSafe('echo $(rm -rf /)');       // false — command substitution
-isSafe('find . -delete');         // false — forbidden find flag
+isSafe('rm -rf /'); // false
+isSafe('ls > /etc/cron.d/evil'); // false — redirection defeats read-only intent
+isSafe('echo $(rm -rf /)'); // false — command substitution
+isSafe('find . -delete'); // false — forbidden find flag
 ```
 
 `isSafe` defaults to the built-in rule packs. You can pass your own rule packs instead:
@@ -39,8 +39,9 @@ isSafe('echo hi', [myRulePack]); // true
 ```
 
 A command is safe only if:
+
 - it parses into at least one command segment,
-- none of its segments contain a subshell or command/process substitution (`` $(...) ``, backticks, `<(...)`, `>(...)`, or a wholly `(...)`-wrapped segment), and
+- none of its segments contain a subshell or command/process substitution (`$(...)`, backticks, `<(...)`, `>(...)`, or a wholly `(...)`-wrapped segment), and
 - every segment is accepted by at least one of the supplied rule packs.
 
 Compound commands (`;`, `|`, `&`, `&&`, `||`, newlines) are split and each part is checked independently — the whole line is only safe if every part is.
@@ -48,11 +49,21 @@ Compound commands (`;`, `|`, `&`, `&&`, `||`, newlines) are split and each part 
 ## `LinuxRulePack`
 
 The default rule pack is a deny-by-default allowlist:
+
 - A fixed set of read-only commands (`ls`, `cat`, `grep`, `head`, `tail`, `wc`, `diff`, `sort`, `uniq`, `whoami`, `hostname`, `date`, `uptime`, `which`, `pwd`, `cd`, `tree`, `mkdir`, `less`, `more`) are unconditionally safe.
 - `find` is safe unless it uses a flag that can execute or mutate (`-exec`, `-execdir`, `-ok`, `-okdir`, `-delete`, `-prune`, `-fprintf`, `-fls`).
 - `uname` is safe only as `uname -a`; `ps` is safe only as `ps aux`.
-- Any redirection (`>`, `>>`, `<`, `<<`, `&>`, `&>>`, including fd-prefixed forms like `2>`) makes a command unsafe regardless of the above.
+- Any redirection (`>`, `>>`, `<`, `<<`, `&>`, `&>>`, `<>`, including fd-prefixed forms like `2>` and forms glued to adjacent text like `ls>out`) makes a command unsafe regardless of the above. Detection is conservative: any `<` or `>` in a word counts, so quoted literals like `grep "a>b"` are rejected too.
 - Anything else (e.g. `rm`, `curl`, `sudo`, `awk`, `sed`) is unsafe by default.
+
+## `GithubRulePack`
+
+Also on by default, this pack only accepts read-only `gh` (GitHub CLI) invocations:
+
+- `pr list`/`view`/`status`/`diff`/`checks`, `issue list`/`view`/`status`, `repo view`/`list`, bare `status`, and `browse` are safe.
+- Any flags are allowed on those subcommands (including `-R/--repo` to target another repo, and `-w/--web` to open a browser).
+- Redirection makes a `gh` command unsafe (enforced centrally in `isSafe`, for every rule pack).
+- Everything else — mutating verbs (`pr create`, `pr merge`, `repo clone`, ...), `gh api`, and config/credential/extension commands (`auth`, `config`, `alias`, `extension`, `ssh-key`, `secret`, `gpg-key`, `codespace`) — is unsafe by default.
 
 ## Development
 
