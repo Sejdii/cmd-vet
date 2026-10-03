@@ -1,0 +1,44 @@
+# top level
+az
+az --version
+az --help
+az -h
+az version
+az version --output json
+az find "az vm"
+
+# group / subgroup list and show
+az vm list
+az vm list -g my-rg -o table
+az vm show -g my-rg -n my-vm
+az group list
+az group show -n my-rg
+az group exists -n my-rg
+az account show
+az account list --all
+az account list-locations
+az network vnet subnet list -g my-rg --vnet-name v
+az resource list -g rg --query "[].name" -o tsv
+az storage account list --subscription my-sub
+az aks list --only-show-errors
+az vm list-sizes --location westeurope
+az vm list-ip-addresses -g rg
+az network watcher show-topology -g rg
+az vm run-command show -g rg --vm-name vm --name cmd
+az storage account check-name-availability --name foo
+az vm list --verbose
+az vm list --help
+
+# Azure DevOps (extension) read-only
+az pipelines runs list
+az pipelines runs show --id 1
+az repos pr list
+
+# queries and what-if
+az graph query -q "Resources | take 5"
+az monitor log-analytics query -w ws -q "AzureActivity | take 5"
+az deployment group what-if
+az deployment group what-if -g rg --template-file main.bicep
+az deployment sub what-if --location westeurope --template-file main.bicep
+az deployment mg what-if --management-group-id m --template-file main.bicep
+az deployment tenant what-if --location westeurope --template-file main.bicep

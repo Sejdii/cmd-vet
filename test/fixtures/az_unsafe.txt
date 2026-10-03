@@ -1,0 +1,91 @@
+# no read-only verb
+az vm create -g rg -n vm --image Ubuntu2204
+az vm delete -g rg -n vm --yes
+az vm start -g rg -n vm
+az vm stop -g rg -n vm
+az vm run-command invoke -g rg -n vm --command-id RunShellScript --scripts "id"
+az group create -n rg -l westeurope
+az group delete -n rg --yes
+az resource delete --ids /subscriptions/x
+az role assignment create --assignee a --role Owner
+az deployment group create -g rg --template-file main.bicep
+
+# malformed what-if paths
+az deployment what-if
+az deployment group sub what-if
+az deployment foo what-if
+
+# malformed query paths
+az graph
+az monitor log-analytics query-execute
+
+# bare verb without a command group
+az show
+az list
+
+# groups not on the read-only allowlist
+az extension list
+az rest list
+az webapp check-name-availability --name foo
+
+# Azure DevOps harmful commands
+az pipelines build queue --definition-name build
+az pipelines run --name build
+az pipelines create --name p
+az repos pr create --title t
+az devops login
+
+# top-level / config / auth
+az login
+az logout
+az account set --subscription s
+az configure --defaults group=rg
+az config set defaults.group=rg
+az extension add --name foo
+az upgrade
+az rest --method get --url https://management.azure.com/subscriptions?api-version=2020-01-01
+az --debug
+az -o json
+az --version extra
+az --output json vm list
+
+# secrets exposed by list/show
+az keyvault secret show --vault-name kv -n s
+az keyvault secret list --vault-name kv
+az keyvault key list --vault-name kv
+az signalr key list -n s -g rg
+az keyvault secret download --vault-name kv -n s -f out
+az storage account keys list -n acc
+az storage account show-connection-string -n acc
+az acr credential show -n reg
+az functionapp keys list -n app -g rg
+az webapp config appsettings list -n app -g rg
+az webapp config connection-string list -n app -g rg
+az webapp deployment list-publishing-credentials -n app -g rg
+az webapp deployment list-publishing-profiles -n app -g rg
+az ad sp credential list --id x
+az account get-access-token
+az aks get-credentials -g rg -n cluster
+az cosmosdb list-keys -n db -g rg
+az redis list-keys -n r -g rg
+az storage container generate-sas -n c --account-name acc
+az keyvault certificate show --vault-name kv -n cert
+az keyvault certificate list --vault-name kv
+az iot hub policy show --hub-name h -n iothubowner
+az iot hub policy list --hub-name h
+az iot dps access-policy show
+az webapp config container show -n app -g rg
+az webapp config storage-account list -n app -g rg
+az webapp auth show -n app -g rg
+az logic workflow list-callback-url -n w -g rg
+az appconfig kv list -n store
+
+# --debug leaks tokens, including abbreviations
+az vm list --debug
+az vm list --debug=true
+az vm list --deb
+az vm list --d
+az group show -n rg --debug
+
+# command substitution inside
+az vm list -g $(whoami)

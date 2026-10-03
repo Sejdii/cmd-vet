@@ -14,6 +14,8 @@ const jiraSafeCommands = readCommandFixtures(new URL('./fixtures/jira_safe.txt',
 const jiraUnsafeCommands = readCommandFixtures(
   new URL('./fixtures/jira_unsafe.txt', import.meta.url),
 );
+const azSafeCommands = readCommandFixtures(new URL('./fixtures/az_safe.txt', import.meta.url));
+const azUnsafeCommands = readCommandFixtures(new URL('./fixtures/az_unsafe.txt', import.meta.url));
 const mixedSafeCommands = readCommandFixtures(
   new URL('./fixtures/mixed_safe.txt', import.meta.url),
 );
@@ -72,6 +74,16 @@ describe('isSafe (JiraRulePack)', () => {
   });
 
   it.each(jiraUnsafeCommands)('treats "%s" as unsafe', (command) => {
+    expect(isSafe(command)).toBe(false);
+  });
+});
+
+describe('isSafe (AzRulePack)', () => {
+  it.each(azSafeCommands)('treats "%s" as safe', (command) => {
+    expect(isSafe(command)).toBe(true);
+  });
+
+  it.each(azUnsafeCommands)('treats "%s" as unsafe', (command) => {
     expect(isSafe(command)).toBe(false);
   });
 });
