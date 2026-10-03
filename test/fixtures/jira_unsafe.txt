@@ -1,0 +1,99 @@
+# mutating issue commands
+jira issue create -tBug -s "Summary"
+jira issue edit PROJ-1 -s "New"
+jira issue update PROJ-1
+jira issue modify PROJ-1
+jira issue assign PROJ-1 me
+jira issue asg PROJ-1 me
+jira issue move PROJ-1 Done
+jira issue transition PROJ-1 Done
+jira issue mv PROJ-1 Done
+jira issue clone PROJ-1
+jira issue delete PROJ-1
+jira issue rm PROJ-1
+jira issue del PROJ-1
+jira issue remove PROJ-1
+jira issue link PROJ-1 PROJ-2 Blocks
+jira issue ln PROJ-1 PROJ-2 Blocks
+jira issue unlink PROJ-1 PROJ-2
+jira issue comment add PROJ-1 hi
+jira issue comments add PROJ-1 hi
+jira issue worklog add PROJ-1 1h
+jira issue wlg add PROJ-1 1h
+jira issue watch PROJ-1 me
+
+# mutating epic / sprint commands
+jira epic create
+jira epic add PROJ-1 PROJ-2
+jira epic assign PROJ-1 PROJ-2
+jira epic remove PROJ-2
+jira epic rm PROJ-2
+jira epic unassign PROJ-2
+jira sprint add 1 PROJ-1
+jira sprint assign 1 PROJ-1
+jira sprint close 1
+jira sprint complete 1
+
+# local-mutating / unknown commands
+jira init
+jira initialize
+jira configure
+jira config
+jira setup
+jira man
+jira man --generate
+jira help
+jira unknown
+
+# noun with no verb
+jira issue
+jira epic
+jira sprint
+jira board
+jira project
+jira release
+
+# a verb that belongs to a different noun
+jira board view
+jira epic view PROJ-1
+jira sprint search foo
+
+# bare jira with no subcommand at all
+jira
+
+# only persistent flags, no command
+jira --debug
+jira -p PROJ
+jira -p
+jira issue -p
+
+# config file override can redirect the API token
+jira -c /tmp/evil.yml issue list
+jira --config /tmp/evil.yml issue list
+jira --config=/tmp/evil.yml issue list
+jira -c/tmp/evil.yml issue list
+jira issue list -c /tmp/evil.yml
+jira issue list --config=/tmp/evil.yml
+jira issue -c /tmp/evil.yml list
+jira me --config /tmp/evil.yml
+
+# unrecognised leading flags
+jira --plain issue list
+jira -x issue list
+jira issue --plain list
+
+# inline environment overrides are a different command name
+JIRA_CONFIG_FILE=/tmp/evil.yml jira issue list
+JIRA_API_TOKEN=x jira me
+
+# mutating jira commands stay unsafe even when their output is redirected
+jira issue move PROJ-1 Done > out.txt
+jira issue list > out.txt && jira issue delete PROJ-1
+
+# command substitution / subshells are treated as unsafe
+jira issue view $(echo PROJ-1)
+jira issue view `echo PROJ-1`
+
+# compound commands where at least one part is unsafe
+jira issue list && jira issue delete PROJ-1
+jira issue view PROJ-1 | jira issue comment add PROJ-1 -

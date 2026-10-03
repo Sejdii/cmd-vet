@@ -5,6 +5,12 @@ gh issue list | grep open
 pwd ; gh repo view
 gh pr view 1 && cat file.txt && gh issue status
 
+# compound commands mixing safe jira with safe linux / github commands
+jira issue list | grep open
+jira issue view PROJ-1 && ls -la
+pwd ; jira sprint list
+jira issue list && gh pr list
+
 # redirection on the last segment of a mixed line
 gh repo view && ls > out.txt
 gh repo view && ls>out.txt

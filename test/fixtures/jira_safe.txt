@@ -1,0 +1,57 @@
+# issue
+jira issue list
+jira issue list -a me -s "In Progress" --plain
+jira issue list "some text" --raw
+jira issue ls --csv
+jira issues search foo
+jira issue view PROJ-1
+jira issue view PROJ-1 --comments 5 --plain
+jira issue show PROJ-1
+
+# other nouns
+jira epic list
+jira epic list PROJ-1 --table
+jira epics ls
+jira sprint list --current
+jira sprints lists
+jira board list
+jira boards ls
+jira project list
+jira projects list
+jira release list
+jira releases ls
+
+# top-level commands
+jira me
+jira version
+jira serverinfo
+jira systeminfo
+jira open PROJ-1
+jira open -n PROJ-1
+jira browse PROJ-1
+jira navigate
+jira completion bash
+
+# leading persistent flags
+jira --debug issue list
+jira --debug=true issue list
+jira --debug=false me
+jira -p PROJ issue list
+jira -pPROJ issue list
+jira --project PROJ issue list
+jira --project=PROJ issue list
+jira --debug -p PROJ sprint list
+
+# persistent flags between noun and verb
+jira issue -p PROJ list
+jira issue --project=PROJ --debug view PROJ-1
+
+# flags after the verb
+jira issue list -p PROJ --debug
+jira issue list -C backend -l bug --order-by created --reverse --paginate 0:20
+
+# compound commands where every part is individually safe
+jira issue list && jira sprint list
+jira issue view PROJ-1 | grep Status
+jira issue list --plain > issues.txt
+jira issue list && gh pr list

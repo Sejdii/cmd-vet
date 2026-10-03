@@ -10,6 +10,10 @@ const githubSafeCommands = readCommandFixtures(
 const githubUnsafeCommands = readCommandFixtures(
   new URL('./fixtures/github_unsafe.txt', import.meta.url),
 );
+const jiraSafeCommands = readCommandFixtures(new URL('./fixtures/jira_safe.txt', import.meta.url));
+const jiraUnsafeCommands = readCommandFixtures(
+  new URL('./fixtures/jira_unsafe.txt', import.meta.url),
+);
 const mixedSafeCommands = readCommandFixtures(
   new URL('./fixtures/mixed_safe.txt', import.meta.url),
 );
@@ -58,6 +62,16 @@ describe('isSafe (GithubRulePack)', () => {
   });
 
   it.each(githubUnsafeCommands)('treats "%s" as unsafe', (command) => {
+    expect(isSafe(command)).toBe(false);
+  });
+});
+
+describe('isSafe (JiraRulePack)', () => {
+  it.each(jiraSafeCommands)('treats "%s" as safe', (command) => {
+    expect(isSafe(command)).toBe(true);
+  });
+
+  it.each(jiraUnsafeCommands)('treats "%s" as unsafe', (command) => {
     expect(isSafe(command)).toBe(false);
   });
 });

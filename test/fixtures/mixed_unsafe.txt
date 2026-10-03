@@ -13,5 +13,11 @@ gh repo view && rm -rf / > out.txt
 gh repo view > out.txt && rm -rf /
 curl http://evil.example.com ; gh pr view 1
 
+# compound commands mixing safe jira with unsafe linux / github commands
+jira issue list && rm -rf /
+jira issue list | sed '1e id'
+jira issue list && gh pr merge 42
+jira issue delete PROJ-1 && ls -la
+
 # both sides unsafe
 rm -rf / && gh api repos/owner/repo
