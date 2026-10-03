@@ -7,21 +7,29 @@ mkdir -p foo/bar
 pwd
 cd /tmp
 tree -L 2
+tree -a --dirsfirst
 grep -r "TODO" .
 grep "hello world" file.txt
 grep "a\"b" file.txt
 cat file.txt
 less file.txt
+less -N file.txt
 more file.txt
 head -n 10 file.txt
 tail -f file.txt
 wc -l file.txt
 diff a.txt b.txt
 sort file.txt
+sort -nr file.txt
+sort --reverse -k 2 file.txt
+sort -
 uniq file.txt
+uniq -c file.txt
 whoami
 hostname
+hostname -f
 date
+date -u +%s
 uptime
 which node
 

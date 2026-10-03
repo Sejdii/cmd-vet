@@ -2,7 +2,7 @@
 
 Check whether a bash command is safe to run, e.g. for whitelisting in AI agent hooks.
 
-`cmd-vet` parses a shell command line and decides whether every command it contains is safe according to a set of pluggable rule packs. It is deliberately conservative: anything unrecognized, any command substitution/subshell, or any output redirection is treated as unsafe.
+`cmd-vet` parses a shell command line and decides whether every command it contains is safe according to a set of pluggable rule packs. It is deliberately conservative: anything unrecognized, any command substitution/subshell, or any redirection other than dumping output to a harmless file is treated as unsafe.
 
 ## Installation
 
@@ -18,7 +18,8 @@ import { isSafe } from 'cmd-vet';
 isSafe('ls -la'); // true
 isSafe('cat file.txt | grep foo'); // true
 isSafe('rm -rf /'); // false
-isSafe('ls > /etc/cron.d/evil'); // false — redirection defeats read-only intent
+isSafe('gh pr view 42 > out.txt'); // true — dumping output to a file
+isSafe('ls > /etc/cron.d/evil'); // false — target can lead to later command execution
 isSafe('echo $(rm -rf /)'); // false — command substitution
 isSafe('find . -delete'); // false — forbidden find flag
 ```
@@ -53,7 +54,6 @@ The default rule pack is a deny-by-default allowlist:
 - A fixed set of read-only commands (`ls`, `cat`, `grep`, `head`, `tail`, `wc`, `diff`, `sort`, `uniq`, `whoami`, `hostname`, `date`, `uptime`, `which`, `pwd`, `cd`, `tree`, `mkdir`, `less`, `more`) are unconditionally safe.
 - `find` is safe unless it uses a flag that can execute or mutate (`-exec`, `-execdir`, `-ok`, `-okdir`, `-delete`, `-prune`, `-fprintf`, `-fls`).
 - `uname` is safe only as `uname -a`; `ps` is safe only as `ps aux`.
-- Any redirection (`>`, `>>`, `<`, `<<`, `&>`, `&>>`, `<>`, including fd-prefixed forms like `2>` and forms glued to adjacent text like `ls>out`) makes a command unsafe regardless of the above. Detection is conservative: any `<` or `>` in a word counts, so quoted literals like `grep "a>b"` are rejected too.
 - Anything else (e.g. `rm`, `curl`, `sudo`, `awk`, `sed`) is unsafe by default.
 
 ## `GithubRulePack`
@@ -62,7 +62,6 @@ Also on by default, this pack only accepts read-only `gh` (GitHub CLI) invocatio
 
 - `pr list`/`view`/`status`/`diff`/`checks`, `issue list`/`view`/`status`, `repo view`/`list`, bare `status`, and `browse` are safe.
 - Any flags are allowed on those subcommands (including `-R/--repo` to target another repo, and `-w/--web` to open a browser).
-- Redirection makes a `gh` command unsafe (enforced centrally in `isSafe`, for every rule pack).
 - Everything else — mutating verbs (`pr create`, `pr merge`, `repo clone`, ...), `gh api`, and config/credential/extension commands (`auth`, `config`, `alias`, `extension`, `ssh-key`, `secret`, `gpg-key`, `codespace`) — is unsafe by default.
 
 ## Development

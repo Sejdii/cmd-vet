@@ -1,9 +1,25 @@
-// The tokenizer doesn't split on `<`/`>`, so redirections can be glued to
-// adjacent text (`ls>out`, `cmd 1>>f`, `<>f`). Any `<` or `>` anywhere in a
-// token is treated as a redirection; this also rejects quoted literals like
-// `"a>b"`, which is an acceptable conservative false positive.
+import type { ParsedCommand } from '../bash-parser/index.js';
+import { isSafeRedirectTarget } from './path-guard.js';
+
 const REDIRECTION_CHAR = /[<>]/;
 
-export function containsRedirection(tokens: string[]): boolean {
-  return tokens.some((token) => REDIRECTION_CHAR.test(token));
+// Fail closed: any `<` or `>` the parser did not fold into a structured redirection is an
+// unrecognised redirection (input glued mid-command, `<>`, quoted literals like `"a>b"`, ...).
+// Recognised redirections must be fd duplications or output to a safe target.
+export function areRedirectionsSafe({
+  name,
+  args,
+  redirections,
+}: Pick<ParsedCommand, 'name' | 'args' | 'redirections'>): boolean {
+  if ([name, ...args].some((token) => REDIRECTION_CHAR.test(token))) return false;
+  return redirections.every((redirection) => {
+    switch (redirection.kind) {
+      case 'fd-dup':
+        return true;
+      case 'output':
+        return isSafeRedirectTarget(redirection.target);
+      case 'input':
+        return false;
+    }
+  });
 }

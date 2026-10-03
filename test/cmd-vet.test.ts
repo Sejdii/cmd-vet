@@ -17,6 +17,23 @@ const mixedUnsafeCommands = readCommandFixtures(
   new URL('./fixtures/mixed_unsafe.txt', import.meta.url),
 );
 
+const redirectionSafeCommands = readCommandFixtures(
+  new URL('./fixtures/redirection_safe.txt', import.meta.url),
+);
+const redirectionUnsafeCommands = readCommandFixtures(
+  new URL('./fixtures/redirection_unsafe.txt', import.meta.url),
+);
+
+describe('isSafe (redirections)', () => {
+  it.each(redirectionSafeCommands)('treats "%s" as safe', (command) => {
+    expect(isSafe(command)).toBe(true);
+  });
+
+  it.each(redirectionUnsafeCommands)('treats "%s" as unsafe', (command) => {
+    expect(isSafe(command)).toBe(false);
+  });
+});
+
 describe('isSafe (LinuxRulePack)', () => {
   it.each(safeCommands)('treats "%s" as safe', (command) => {
     expect(isSafe(command)).toBe(true);

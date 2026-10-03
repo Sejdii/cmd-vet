@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-cmd-vet checks whether a bash command string is safe to run (e.g. for whitelisting in AI agent hooks). It parses a command line and decides, per rule pack, whether every individual command in it is safe. It is deliberately conservative: anything unrecognized, any command substitution/subshell, or any redirection is rejected.
+cmd-vet checks whether a bash command string is safe to run (e.g. for whitelisting in AI agent hooks).
 
 ## Commands
 
@@ -50,9 +50,9 @@ rule-packs    (depends on core)
 
 dependency-cruiser enforces two things for every module: it may only import other modules through their `index.ts` (public API, no reaching into internal files), and it may only depend on the modules listed in `.dependency-cruiser.mjs`'s `allowedModuleDeps`. Adding a new module or a new cross-module import requires updating that map, or the build fails.
 
-**`src/bash-parser`** turns a raw command-line string into `ParsedCommand[]`
+**`src/bash-parser`** turns a raw command-line string into `ParsedCommand[]`.
 
-**`src/core`** defines the `RulePack` interface (`{ name, evaluate(commandName, args): boolean }`) and `isSafe(command, rulePacks)`: a command is safe only if it parses into at least one segment, none of the segments contain a subshell/command substitution, and every segment is accepted by at least one supplied rule pack.
+**`src/core`** defines the `RulePack` interface (`{ name, evaluate(commandName, args): boolean }`) and `isSafe(command, rulePacks)`: a command is safe only if it parses into at least one segment, none of the segments contain a subshell/command substitution, redirections are allowed only as trailing output redirections whose targets pass the allowlist predicate `isSafeRedirectTarget` in `path-guard.ts` (plain relative paths without dot-entries or `..`, or `/dev/null`). Redirection fixtures live in `test/fixtures/redirection_*.txt`.
 
 **`src/rule-packs`** holds concrete rule packs.
 

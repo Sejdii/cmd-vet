@@ -1,0 +1,40 @@
+# Redirection behaviour is pack-independent; cases are grouped by rule.
+
+# output to a plain relative file inside the working directory
+cat file.txt > out.txt
+cat file.txt >> out.txt
+cat file.txt>out.txt
+ls -la>>out.txt
+ls file2>out.txt
+ls > bashrc-notes.txt
+ls > cron-notes.txt
+ls > sub/dir/out.txt
+gh pr view 42 > out.txt
+gh issue list >> out.txt
+gh issue list>>out.txt
+
+# explicit fd and combined stdout/stderr forms
+ls 2>err.txt
+ls &> out.txt
+ls &>>out.txt
+gh pr view 42 1>out.json
+gh pr list &>out.txt
+
+# /dev/null is the only absolute target
+ls 2> /dev/null
+
+# fd duplication and several redirections in a row
+ls > out.txt 2>&1
+ls > out.txt 2> err.txt
+gh pr view 42 > out.txt 2>&1
+gh pr view 42 > out.txt 2> err.txt
+
+# redirection on a segment other than the last
+sort file.txt | uniq > sorted.txt
+find . -name "*.log" | grep error >> errors.txt
+pwd ; ls -la > listing.txt
+ls > out.txt && pwd
+cat file.txt > out.txt | grep foo
+ls > out.txt ; pwd
+gh pr view 1 | grep open > open.txt
+gh pr view 42 > out.txt | grep open

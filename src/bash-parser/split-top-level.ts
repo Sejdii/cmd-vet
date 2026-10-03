@@ -44,7 +44,7 @@ function consumeUnquotedChar(state: SplitState, char: string, next: string): 1 |
     return 1;
   }
 
-  if (state.parenDepth === 0 && isOperatorAt(char, next)) {
+  if (state.parenDepth === 0 && isOperatorAt(state, char, next)) {
     state.segments.push(state.current);
     state.current = '';
     return isTwoCharOperator(char, next) ? 2 : 1;
@@ -67,7 +67,12 @@ function isTwoCharOperator(char: string, next: string): boolean {
   return (char === '&' && next === '&') || (char === '|' && next === '|');
 }
 
-function isOperatorAt(char: string, next: string): boolean {
+// `&>` and `N>&M` are redirections, not the background operator.
+const isRedirectionAmpersand = (current: string, next: string): boolean =>
+  current.endsWith('>') || next === '>';
+
+function isOperatorAt(state: SplitState, char: string, next: string): boolean {
+  if (char === '&' && isRedirectionAmpersand(state.current, next)) return false;
   return (
     isTwoCharOperator(char, next) || char === ';' || char === '|' || char === '&' || char === '\n'
   );

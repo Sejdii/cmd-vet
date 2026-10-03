@@ -7,8 +7,10 @@ pwd ; gh repo clone owner/repo
 # compound commands mixing safe github with unsafe linux commands
 gh pr list && rm -rf /
 gh issue list | sed '1e id'
-gh repo view && ls > out.txt
-gh repo view && ls>out.txt
+gh repo view > ~/.bashrc && ls
+ls>/etc/cron.d/x && gh repo view
+gh repo view && rm -rf / > out.txt
+gh repo view > out.txt && rm -rf /
 curl http://evil.example.com ; gh pr view 1
 
 # both sides unsafe

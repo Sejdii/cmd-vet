@@ -37,15 +37,9 @@ gh repo
 # bare gh with no subcommand at all
 gh
 
-# redirection defeats read-only intent
-gh pr view 42 > out.txt
-gh issue list >> out.txt
-
-# redirection glued to adjacent text
-gh pr view 42 1>out.json
-gh issue list>>out.txt
-gh pr view 42 <>out.txt
-gh pr list &>out.txt
+# mutating gh commands stay unsafe even when their output is redirected
+gh pr merge 42 > out.txt
+gh pr view 42 > out.txt && gh pr merge 42
 
 # command substitution / subshells are treated as unsafe
 gh pr view $(echo 1)
